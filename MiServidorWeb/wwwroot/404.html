@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página no encontrada</title>
+    <style>
+        :root { --fondo: #f5f3fa; --texto: #1e1838; --suave: #585175; --violeta: #6332ec; --violeta-oscuro: #4c20b8; --magenta: #d11d94; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            text-align: center;
+        }
+        .codigo {
+            font-size: clamp(5rem, 18vw, 10rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, var(--violeta), var(--magenta));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h1 { font-size: 1.6rem; margin: 0.5rem 0; }
+        p { color: var(--suave); margin: 0 0 1.75rem; }
+        a {
+            display: inline-block;
+            background: var(--violeta);
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.8rem 1.4rem;
+            border-radius: 10px;
+        }
+        a:hover { background: var(--violeta-oscuro); }
+        a:focus-visible { outline: 3px solid var(--magenta); outline-offset: 3px; }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="codigo">404</div>
+        <h1>No encontramos lo que buscabas</h1>
+        <p>El archivo que pediste no existe en este servidor.</p>
+        <a href="/">Volver al inicio</a>
+    </main>
+</body>
+</html>
