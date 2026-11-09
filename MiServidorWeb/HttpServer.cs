@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -12,6 +13,8 @@ namespace MiServidorWeb
         private readonly ServerConfig _config;
         private readonly TcpListener _listener;
         private bool _estaEjecutando;
+
+        private static readonly object _lockObjeto = new object();
 
         public HttpServer(ServerConfig config)
         {
@@ -59,9 +62,25 @@ namespace MiServidorWeb
                     string destino = partes[1];
                     Console.WriteLine($"{metodo} {destino}");
 
+                    string ipCliente = ((IPEndPoint)cliente.Client.RemoteEndPoint)?.Address.ToString() ?? "Desconocida";
+
                     // De la ruta al archivo (sin querystring; "/" equivale a index.html)
-                    string ruta = destino.Split('?')[0];
+                    string ruta = destino;
+                    string queryString = "";
+                    if (destino.Contains("?"))
+                    {
+                        string[] partesUrl = destino.Split('?');
+                        ruta = partesUrl[0];
+                        queryString = partesUrl[1];
+
+                        // Opcional: Procesar o loguear los parámetros de consulta individualmente
+                        ManejarQueryString(queryString);
+                    }
+
                     if (ruta == "/") ruta = "/index.html";
+
+                    // --- (Requisito 9): Registrar la solicitud en el log diario con IP ---
+                    RegistrarLog(ipCliente, metodo, destino);
 
                     string raiz = Path.GetFullPath(_config.WebRoot);
                     string relativa = Uri.UnescapeDataString(ruta).TrimStart('/', '\\');
@@ -72,8 +91,11 @@ namespace MiServidorWeb
                     if (dentroDeRaiz && File.Exists(rutaFisica))
                     {
                         byte[] contenido = await File.ReadAllBytesAsync(rutaFisica);
+
+                        contenido = ComprimirDatos(contenido);
+
                         await HttpResponse.EnviarAsync(stream, 200, "OK",
-                            HttpResponse.ObtenerTipoContenido(rutaFisica), contenido);
+                            HttpResponse.ObtenerTipoContenido(rutaFisica), contenido, true);
                     }
                     else
                     {
@@ -84,6 +106,44 @@ namespace MiServidorWeb
             catch (Exception ex)
             {
                 Console.WriteLine($"[ERROR cliente]: {ex.Message}");
+            }
+        }
+        private void ManejarQueryString(string queryString)
+        {
+            Console.WriteLine($"[Query] Parámetros detectados: {queryString}");
+            string[] parametros = queryString.Split('&');
+            foreach (var param in parametros)
+            {
+                string[] kv = param.Split('=');
+                if (kv.Length == 2)
+                {
+                    Console.WriteLine($"  -> Clave: {kv[0]}, Valor: {kv[1]}");
+                }
+            }
+        }
+
+        // --- REQUISITO 9: Log diario con exclusión mutua (lock) ---
+        private void RegistrarLog(string ip, string metodo, string ruta)
+        {
+            string nombreArchivoLog = $"log_{DateTime.Now:yyyy-MM-dd}.txt";
+            string registro = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} | IP: {ip} | {metodo} {ruta}\n";
+
+            lock (_lockObjeto)
+            {
+                File.AppendAllText(nombreArchivoLog, registro);
+            }
+        }
+
+        // --- REQUISITO 8: Compresión GZip (Patrón Decorador) ---
+        private byte[] ComprimirDatos(byte[] datosOriginales)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
+                {
+                    gzipStream.Write(datosOriginales, 0, datosOriginales.Length);
+                }
+                return memoryStream.ToArray();
             }
         }
     }

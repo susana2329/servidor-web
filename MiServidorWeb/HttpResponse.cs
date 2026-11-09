@@ -6,12 +6,18 @@ namespace MiServidorWeb;
 public static class HttpResponse
 {
     public static async Task EnviarAsync(NetworkStream stream, int codigo, string motivo,
-                                         string tipoContenido, byte[] cuerpo)
+                                         string tipoContenido, byte[] cuerpo, bool esGzip = false)
     {
         string encabezado = $"HTTP/1.1 {codigo} {motivo}\r\n" +
                             $"Content-Type: {tipoContenido}\r\n" +
-                            $"Content-Length: {cuerpo.Length}\r\n" +
-                            "Connection: close\r\n\r\n";
+                            $"Content-Length: {cuerpo.Length}\r\n";
+
+        if (esGzip)
+        {
+            encabezado += "Content-Encoding: gzip\r\n";
+        }
+
+        encabezado += "Connection: close\r\n\r\n";
 
         await stream.WriteAsync(Encoding.ASCII.GetBytes(encabezado));
         await stream.WriteAsync(cuerpo);
