@@ -3,18 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ejemplo de Página HTML</title>
+    <title>MiServidorWeb</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a mi página web</h1>
+    <header class="top">
+        <span class="brand">MiServidorWeb</span>
+        <nav>
+            <a href="#get">GET</a>
+            <a href="#post">POST</a>
+            <a href="#estado">Estado</a>
+        </nav>
     </header>
+
     <main>
-        <p>Este es un ejemplo de una página HTML con CSS y JavaScript incluidos.</p>
-        <img src="imagen.png" alt="Descripción de la imagen">
-        <button id="myButton">Haz clic aquí</button>
+        <section class="hero">
+            <div class="hero-text">
+                <h1>Un servidor web hecho con sockets</h1>
+                <p>Trabajo práctico final de programación de redes.</p>
+            </div>
+            <div class="logo">
+                <img src="imagen.jpg" alt="Logo del proyecto.">
+            </div>
+        </section>
+
+        <section id="get" class="row">
+            <div class="row-text">
+                <h2>Enviar datos por GET</h2>
+                <p>Los datos viajan en la URL, el servidor los lee y los registra en el log.</p>
+            </div>
+            <form class="row-form" action="/" method="get">
+                <label>Nombre
+                    <input type="text" name="nombre" placeholder="Tu nombre" required>
+                </label>
+                <label>Materia
+                    <input type="text" name="materia" value="Programación de redes">
+                </label>
+                <button type="submit">Enviar por GET</button>
+            </form>
+        </section>
+
+        <section id="post" class="row">
+            <div class="row-text">
+                <h2>Enviar datos por POST</h2>
+                <p>Los datos viajan en el cuerpo del mensaje, el servidor lee los bytes como indique.</p>
+            </div>
+            <form class="row-form" action="/" method="post">
+                <label>Nombre
+                    <input type="text" name="nombre" placeholder="Tu nombre" required>
+                </label>
+                <label>Mensaje
+                    <textarea name="mensaje" rows="3" placeholder="Escribí algo para ver en el log"></textarea>
+                </label>
+                <button type="submit">Enviar por POST</button>
+            </form>
+        </section>
+
+        <section id="estado" class="row">
+            <div class="row-text">
+                <h2>Comprobar respuestas</h2>
+                <p>Pedí una página que existe y otra que no, y mirá el código de estado que devuelve el servidor.</p>
+            </div>
+            <div class="row-form">
+                <div class="actions">
+                    <button type="button" data-ruta="/">Pedir la página principal</button>
+                    <button type="button" class="secondary" data-ruta="/no-existe.html">Pedir un archivo inexistente</button>
+                </div>
+                <p id="resultado" role="status" aria-live="polite">Todavía no hiciste ninguna prueba.</p>
+            </div>
+        </section>
     </main>
+
+<footer>
+        <p>Trabajo práctico - integrantes:</p>
+        <ul class="integrantes">
+            <li>Nicolas Aiello</li>
+            <li>Susana Cordon</li>
+            <li>Facundo Torres</li>
+            <li>Belen Lopez</li>
+        </ul>
+    </footer>
+
     <script src="script.js"></script>
+
 </body>
 </html>
