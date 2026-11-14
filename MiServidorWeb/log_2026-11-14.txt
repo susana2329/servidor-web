@@ -1,0 +1,17 @@
+2026-11-14 16:27:00 | IP: 127.0.0.1 | GET /
+2026-11-14 16:27:00 | IP: 127.0.0.1 | GET /styles.css
+2026-11-14 16:27:00 | IP: 127.0.0.1 | GET /imagen.jpg
+2026-11-14 16:27:00 | IP: 127.0.0.1 | GET /script.js
+2026-11-14 16:27:01 | IP: 127.0.0.1 | GET /favicon.ico
+2026-11-14 16:27:33 | IP: 127.0.0.1 | GET /?nombre=Susana&materia=Programaci%C3%B3n+de+redes
+2026-11-14 16:27:33 | IP: 127.0.0.1 | GET /styles.css
+2026-11-14 16:27:33 | IP: 127.0.0.1 | GET /imagen.jpg
+2026-11-14 16:27:33 | IP: 127.0.0.1 | GET /script.js
+2026-11-14 16:28:02 | IP: 127.0.0.1 | POST / | DATOS: nombre=Susana&mensaje=kmjnkjnk jnjjk
+2026-11-14 16:28:02 | IP: 127.0.0.1 | GET /styles.css
+2026-11-14 16:28:09 | IP: 127.0.0.1 | GET /
+2026-11-14 16:28:09 | IP: 127.0.0.1 | GET /styles.css
+2026-11-14 16:28:09 | IP: 127.0.0.1 | GET /imagen.jpg
+2026-11-14 16:28:09 | IP: 127.0.0.1 | GET /script.js
+2026-11-14 16:28:18 | IP: 127.0.0.1 | GET /
+2026-11-14 16:28:22 | IP: 127.0.0.1 | GET /no-existe.html

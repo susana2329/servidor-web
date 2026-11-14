@@ -1,18 +1,23 @@
+using System.IO;
+using System.IO.Compression;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MiServidorWeb;
 
 public static class HttpResponse
 {
     public static async Task EnviarAsync(NetworkStream stream, int codigo, string motivo,
-                                         string tipoContenido, byte[] cuerpo, bool esGzip = false)
+                                         string tipoContenido, byte[] cuerpo, bool comprimir = true)
     {
+        byte[] datosAEnviar = comprimir ? ComprimirDatos(cuerpo) : cuerpo;
+
         string encabezado = $"HTTP/1.1 {codigo} {motivo}\r\n" +
                             $"Content-Type: {tipoContenido}\r\n" +
-                            $"Content-Length: {cuerpo.Length}\r\n";
+                            $"Content-Length: {datosAEnviar.Length}\r\n";
 
-        if (esGzip)
+        if (comprimir)
         {
             encabezado += "Content-Encoding: gzip\r\n";
         }
@@ -20,7 +25,7 @@ public static class HttpResponse
         encabezado += "Connection: close\r\n\r\n";
 
         await stream.WriteAsync(Encoding.ASCII.GetBytes(encabezado));
-        await stream.WriteAsync(cuerpo);
+        await stream.WriteAsync(datosAEnviar);
     }
 
     public static async Task EnviarNoEncontradoAsync(NetworkStream stream, string raiz)
@@ -30,7 +35,8 @@ public static class HttpResponse
             ? await File.ReadAllBytesAsync(pagina)
             : Encoding.UTF8.GetBytes("404 Not Found");
 
-        await EnviarAsync(stream, 404, "Not Found", "text/html; charset=utf-8", cuerpo);
+        // Ahora el 404 también se envía comprimido con GZip
+        await EnviarAsync(stream, 404, "Not Found", "text/html; charset=utf-8", cuerpo, true);
     }
 
     public static string ObtenerTipoContenido(string archivo) =>
@@ -44,4 +50,14 @@ public static class HttpResponse
             ".ico" => "image/x-icon",
             _ => "application/octet-stream"
         };
+
+    private static byte[] ComprimirDatos(byte[] datosOriginales)
+    {
+        using var memoryStream = new MemoryStream();
+        using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
+        {
+            gzipStream.Write(datosOriginales, 0, datosOriginales.Length);
+        }
+        return memoryStream.ToArray();
+    }
 }
