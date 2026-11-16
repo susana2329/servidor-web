@@ -17,11 +17,8 @@ public class HttpServer
     private readonly ServerConfig _config;
     private readonly TcpListener _listener;
  
-    // Semáforo: cuenta cuántas conexiones se están atendiendo. Al llegar al máximo, el servidor
-    // deja de aceptar nuevas hasta que alguna termine (las demás esperan en la cola del sistema).
     private readonly SemaphoreSlim _limite;
  
-    // Conexiones en curso, para esperarlas al cerrar el servidor.
     private readonly ConcurrentDictionary<Task, byte> _conexionesActivas = new();
  
     public HttpServer(ServerConfig config)
@@ -31,7 +28,6 @@ public class HttpServer
         _limite = new SemaphoreSlim(_config.MaxConexiones);
     }
  
-    // El token de cancelación es la señal de "cerrar el servidor" (Ctrl+C).
     public async Task IniciarAsync(CancellationToken cancelacion)
     {
         _listener.Start();
@@ -42,7 +38,7 @@ public class HttpServer
         {
             while (!cancelacion.IsCancellationRequested)
             {
-                await _limite.WaitAsync(cancelacion);   // espera un lugar libre
+                await _limite.WaitAsync(cancelacion);  
                 try
                 {
                     TcpClient cliente = await _listener.AcceptTcpClientAsync(cancelacion);
@@ -52,7 +48,7 @@ public class HttpServer
                     _ = tarea.ContinueWith(t =>
                     {
                         _conexionesActivas.TryRemove(t, out _);
-                        _limite.Release();              // libera el lugar al terminar
+                        _limite.Release();           
                     });
                 }
                 catch (OperationCanceledException)
@@ -69,14 +65,14 @@ public class HttpServer
         }
         catch (OperationCanceledException)
         {
-            // Ctrl+C mientras esperábamos un lugar libre: salimos del ciclo.
+            
         }
         finally
         {
-            _listener.Stop();   // deja de aceptar conexiones nuevas
+            _listener.Stop();   
         }
  
-        // Cierre ordenado: las conexiones ya aceptadas terminan de responder (máximo 5 segundos).
+        
         Console.WriteLine("Cerrando: esperando que terminen las conexiones en curso...");
         await Task.WhenAny(Task.WhenAll(_conexionesActivas.Keys), Task.Delay(TimeSpan.FromSeconds(5)));
         Console.WriteLine("Servidor detenido.");
@@ -166,13 +162,9 @@ public class HttpServer
         }
     }
  
-    // Los formularios mandan "clave=valor&clave=valor" con los caracteres especiales codificados
-    // (espacio = "+", "ó" = "%C3%B3"). Primero se separa por "&" y "=", y recién después se decodifica
-    // cada parte; si se decodificara todo junto, un "%26" (&) del usuario se confundiría con un separador.
     private static string Decodificar(string texto) =>
         Uri.UnescapeDataString(texto.Replace('+', ' ')).Replace("\r", " ").Replace("\n", " ");
  
-    // Devuelve la lista de pares (clave, valor) ya decodificados.
     private static List<(string Clave, string Valor)> ParsearParametros(string texto)
     {
         var lista = new List<(string Clave, string Valor)>();
@@ -184,11 +176,10 @@ public class HttpServer
         return lista;
     }
  
-    // Para el log: una sola línea por pedido, con los datos separados por " | ".
     private static string FormatearParametros(string texto) =>
         string.Join(" | ", ParsearParametros(texto).Select(p => $"{p.Clave}={p.Valor}"));
  
-    // Muestra en la terminal los datos de un GET (querystring) o de un POST (cuerpo), uno por línea.
+
     private static void MostrarParametros(string titulo, string texto)
     {
         Console.WriteLine(titulo);

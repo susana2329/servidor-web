@@ -22,7 +22,7 @@ namespace MiServidorWeb
                 return 1;
             }
  
-            // Ctrl+C no mata el programa de golpe: avisa al servidor para que cierre ordenadamente.
+           
             using var cancelacion = new CancellationTokenSource();
             Console.CancelKeyPress += (_, e) =>
             {

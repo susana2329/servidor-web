@@ -9,7 +9,6 @@ namespace MiServidorWeb;
  
 public static class HttpResponse
 {
-    // Criterio de compresión: solo respuestas de más de 1 KB (en las chicas gzip agranda en vez de achicar).
     private const int MinimoParaComprimir = 1024;
  
     public static async Task EnviarAsync(NetworkStream stream, int codigo, string motivo,
@@ -24,10 +23,9 @@ public static class HttpResponse
                             $"Content-Type: {tipoContenido}\r\n" +
                             $"Content-Length: {datosAEnviar.Length}\r\n";
  
-        // Con esta cabecera el cliente sabe que la respuesta viene comprimida.
         if (comprimir) encabezado += "Content-Encoding: gzip\r\n";
  
-        // Avisa a caches y proxies que la respuesta cambia según el Accept-Encoding del pedido.
+      
         if (comprimible) encabezado += "Vary: Accept-Encoding\r\n";
  
         if (encabezadoExtra != null) encabezado += encabezadoExtra + "\r\n";
@@ -66,8 +64,6 @@ public static class HttpResponse
             _ => "application/octet-stream"
         };
  
-    // Solo se comprime lo que es texto. PNG, JPG, ZIP, PDF, etc. ya vienen comprimidos:
-    // volver a comprimirlos gasta CPU y casi no ahorra espacio.
     private static bool EsComprimible(string tipoContenido) =>
         tipoContenido.StartsWith("text/") ||
         tipoContenido.Contains("json") ||

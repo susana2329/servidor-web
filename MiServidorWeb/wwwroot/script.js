@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("[data-ruta]").forEach(function (boton) {
         boton.addEventListener("click", async function () {
             const ruta = boton.dataset.ruta;
-            clearTimeout(temporizador);   // cancela una pestaña pendiente de un clic anterior
+            clearTimeout(temporizador);   
             resultado.className = "";
             resultado.textContent = "Pidiendo " + ruta + "...";
 
@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const respuesta = await fetch(ruta, { cache: "no-store" });
                 const ms = Math.round(performance.now() - inicio);
 
-                // "OK" se deja como viene; el resto ("Not Found") se muestra en minúscula.
+               
                 const estado = respuesta.statusText === "OK" ? "OK" : respuesta.statusText.toLowerCase();
                 resultado.textContent = "GET " + ruta + " devolvió " + respuesta.status +
                     (estado ? " " + estado : "") + " en " + ms + " ms.";
                 resultado.className = respuesta.ok ? "ok" : "error";
 
-                // Punto 5: pasado ese tiempo, se abre la página de error en una pestaña nueva.
+                
                 if (boton.dataset.abrirTras !== undefined) {
                     temporizador = setTimeout(function () {
                         const pestana = window.open(ruta, "_blank");
@@ -35,11 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // ----- Aviso emergente al enviar los formularios GET y POST -----
+
     const aviso = document.getElementById("aviso");
 
     function mostrarAviso(ok, titulo, detalle) {
-        if (typeof aviso.showModal !== "function") {   // navegador viejo: alert común
+        if (typeof aviso.showModal !== "function") {   
             alert(titulo + "\n\n" + detalle);
             return;
         }
@@ -49,20 +49,19 @@ document.addEventListener("DOMContentLoaded", function () {
         aviso.showModal();
     }
 
-    // Envía el formulario con fetch (sin cambiar de página). Al servidor le llega el mismo pedido
-    // HTTP que con el envío normal: GET con los datos en la URL, o POST con los datos en el cuerpo.
+
     function conectarFormulario(form, metodo) {
         form.addEventListener("submit", async function (evento) {
             evento.preventDefault();
 
             const campos = new FormData(form);
-            const datos = new URLSearchParams(campos);   // clave=valor&clave=valor
+            const datos = new URLSearchParams(campos);   
             const legibles = Array.from(campos, function (par) { return par[0] + ": " + par[1]; }).join("\n");
             const url = metodo === "GET" ? "/?" + datos.toString() : "/";
             const opciones = { cache: "no-store" };
             if (metodo === "POST") {
                 opciones.method = "POST";
-                opciones.body = datos;   // el navegador agrega Content-Type y Content-Length
+                opciones.body = datos;   
             }
 
             const boton = form.querySelector("button[type=submit]");

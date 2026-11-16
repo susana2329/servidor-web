@@ -340,7 +340,6 @@ footer p {
     }
 }
 
-/* Ventana emergente de aviso (GET y POST) */
 dialog {
     border: 1px solid var(--linea);
     border-radius: 20px;

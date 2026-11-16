@@ -11,8 +11,6 @@ namespace MiServidorWeb
  
         public string WebRoot { get; set; } = "wwwroot";
  
-        // Máximo de conexiones atendidas al mismo tiempo. Las que llegan de más no se rechazan:
-        // esperan su turno en la cola del sistema hasta que se libere un lugar.
         public int MaxConexiones { get; set; } = 100;
  
         public static ServerConfig Cargar(string rutaArchivo)
