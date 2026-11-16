@@ -32,12 +32,12 @@
                 <h2>Enviar datos por GET</h2>
                 <p>Los datos viajan en la URL, el servidor los lee y los registra en el log.</p>
             </div>
-            <form class="row-form" action="/" method="get">
+            <form id="form-get" class="row-form" action="/" method="get">
                 <label>Nombre
                     <input type="text" name="nombre" placeholder="Tu nombre" required>
                 </label>
                 <label>Materia
-                    <input type="text" name="materia" value="Programación de redes">
+                    <input type="text" name="materia" placeholder="Nombre de la materia" required>
                 </label>
                 <button type="submit">Enviar por GET</button>
             </form>
@@ -48,7 +48,7 @@
                 <h2>Enviar datos por POST</h2>
                 <p>Los datos viajan en el cuerpo del mensaje, el servidor lee los bytes como indique.</p>
             </div>
-            <form class="row-form" action="/" method="post">
+            <form id="form-post" class="row-form" action="/" method="post">
                 <label>Nombre
                     <input type="text" name="nombre" placeholder="Tu nombre" required>
                 </label>
@@ -67,7 +67,7 @@
             <div class="row-form">
                 <div class="actions">
                     <button type="button" data-ruta="/">Pedir la página principal</button>
-                    <button type="button" class="secondary" data-ruta="/no-existe.html">Pedir un archivo inexistente</button>
+                    <button type="button" class="secondary" data-ruta="/no-existe.html" data-abrir-tras="3000">Pedir un archivo inexistente</button>
                 </div>
                 <p id="resultado" role="status" aria-live="polite">Todavía no hiciste ninguna prueba.</p>
             </div>
@@ -83,6 +83,14 @@
             <li>Belen Lopez</li>
         </ul>
     </footer>
+
+    <dialog id="aviso" aria-labelledby="aviso-titulo">
+        <h3 id="aviso-titulo"></h3>
+        <p id="aviso-detalle"></p>
+        <form method="dialog">
+            <button type="submit">Aceptar</button>
+        </form>
+    </dialog>
 
     <script src="script.js"></script>
 
